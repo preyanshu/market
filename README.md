@@ -1,6 +1,6 @@
 # BeliefMarket
 
-Private, conditional prediction markets using BITE v2 on SKALE.
+AI native Private, conditional prediction markets using BITE v2 on SKALE.
 
 BeliefMarket keeps market beliefs private until a condition is met. Users and agents submit encrypted positions. The chain cannot see which side is winning. When the market resolves, BITE v2 conditional threshold execution decrypts positions and settles payouts atomically.
 
