@@ -33,6 +33,7 @@ import { type AgentLog } from "@/hooks/useAgentEngine";
 import { useAgentContext } from "@/providers/AgentProvider";
 import { createAgentWallet, hasAgentWallet, deleteAgentWallet, getAgentWalletAddress, getAgentWalletPrivateKey } from "@/utils/agentWallet";
 import { encryptDirection } from "@/utils/encryption";
+import { exportEncryptedData, importEncryptedData, type ExportedData } from "@/utils/encryptedStore";
 
 // ═══════════════════════════════════════════════════════════════════
 // Main Page
@@ -54,8 +55,50 @@ function AgentPage() {
   const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "compare" | "audit">("compare");
+  const [dataStatus, setDataStatus] = useState<{ type: "error" | "success"; msg: string } | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   const { engine } = useAgentContext();
+
+  const handleExportData = useCallback(async () => {
+    if (!address) return;
+    try {
+      const payload = await exportEncryptedData(address);
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `beliefmarket-backup-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setDataStatus({ type: "success", msg: `Exported ${payload.items.length} item(s)` });
+      setTimeout(() => setDataStatus(null), 3000);
+    } catch (err) {
+      setDataStatus({ type: "error", msg: err instanceof Error ? err.message : "Export failed" });
+    }
+  }, [address]);
+
+  const handleImportData = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file || !address) return;
+      setDataStatus(null);
+      try {
+        const text = await file.text();
+        const payload = JSON.parse(text) as ExportedData;
+        if (!payload?.items || !Array.isArray(payload.items)) {
+          throw new Error("Invalid backup file");
+        }
+        const { imported } = await importEncryptedData(payload, address);
+        setDataStatus({ type: "success", msg: `Imported ${imported} item(s). Reloading...` });
+        setTimeout(() => window.location.reload(), 1500);
+      } catch (err) {
+        setDataStatus({ type: "error", msg: err instanceof Error ? err.message : "Import failed" });
+      }
+    },
+    [address]
+  );
 
   // Auto-select agent & tab from query params (e.g. ?select=3&tab=signals)
   const deepLinkHandledRef = useRef(false);
@@ -110,11 +153,65 @@ function AgentPage() {
               Deploy autonomous agents with individual vaults, guardrails, and execution modes.
             </p>
           </div>
-          <button onClick={() => setShowCreateModal(true)} className="btn-primary">
-            Create Agent
-          </button>
+          {isConnected && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <button
+                onClick={handleExportData}
+                style={{
+                  padding: "8px 14px", fontSize: 13, fontWeight: 500,
+                  background: "transparent", color: "var(--text-secondary)",
+                  border: "1px solid var(--border)", borderRadius: 8, cursor: "pointer",
+                }}
+                title="Export encrypted data for device migration"
+              >
+                Export Data
+              </button>
+              <button
+                onClick={() => importInputRef.current?.click()}
+                style={{
+                  padding: "8px 14px", fontSize: 13, fontWeight: 500,
+                  background: "transparent", color: "var(--text-secondary)",
+                  border: "1px solid var(--border)", borderRadius: 8, cursor: "pointer",
+                }}
+                title="Import encrypted backup from another device"
+              >
+                Import Data
+              </button>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept=".json,application/json"
+                style={{ display: "none" }}
+                onChange={handleImportData}
+              />
+              <button onClick={() => setShowCreateModal(true)} className="btn-primary">
+                Create Agent
+              </button>
+            </div>
+          )}
         </div>
+        {dataStatus && (
+          <div
+            style={{
+              marginBottom: 16, padding: "10px 14px", borderRadius: 8, fontSize: 13,
+              background: dataStatus.type === "error" ? "rgba(239,68,68,0.1)" : "rgba(34,197,94,0.1)",
+              color: dataStatus.type === "error" ? "#ef4444" : "#22c55e",
+              border: `1px solid ${dataStatus.type === "error" ? "rgba(239,68,68,0.3)" : "rgba(34,197,94,0.3)"}`,
+            }}
+          >
+            {dataStatus.msg}
+          </div>
+        )}
 
+        {!isConnected ? (
+          <div style={{
+            background: "var(--bg-raised)", border: "1px solid var(--border)",
+            borderRadius: "var(--radius-md)", padding: "56px 24px", textAlign: "center",
+          }}>
+            <p style={{ fontSize: 14, color: "var(--text-muted)" }}>No wallet connected</p>
+          </div>
+        ) : (
+        <>
         {/* Agent Cards Grid */}
         <div style={{ marginBottom: 28 }}>
           {engine.agentIds.length === 0 ? (
@@ -238,6 +335,8 @@ function AgentPage() {
             />
           )}
         </AnimatePresence>
+        </>
+        )}
       </motion.div>
     </div>
   );

@@ -251,6 +251,82 @@ export async function getAllKeys(): Promise<string[]> {
   }
 }
 
+// ─── Export / Import (for device migration) ───────────────────────────
+
+export interface ExportedData {
+  version: 1;
+  exportedAt: number;
+  exportedBy: string;
+  items: { key: string; data: string }[];
+}
+
+/**
+ * Export all encrypted data as a JSON file for backup/device migration.
+ * Data stays encrypted; decryption on the new device requires the same
+ * NEXT_PUBLIC_STORAGE_SECRET.
+ */
+export async function exportEncryptedData(exportedBy: string): Promise<ExportedData> {
+  const db = await openDB();
+  const items: { key: string; data: string }[] = await new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, "readonly");
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.getAll();
+    request.onsuccess = () => {
+      db.close();
+      resolve(
+        (request.result as { key: string; data: string }[]).map((r) => ({
+          key: r.key,
+          data: r.data,
+        }))
+      );
+    };
+    request.onerror = () => {
+      db.close();
+      reject(request.error);
+    };
+  });
+  return { version: 1, exportedAt: Date.now(), exportedBy, items };
+}
+
+/**
+ * Import previously exported encrypted data.
+ * Validates that exportedBy matches currentWallet; merges into existing store.
+ * Requires the same NEXT_PUBLIC_STORAGE_SECRET as when the data was exported.
+ */
+export async function importEncryptedData(
+  payload: ExportedData,
+  currentWallet: string
+): Promise<{ imported: number; skipped: number }> {
+  const normalizedCurrent = currentWallet.toLowerCase();
+  const normalizedExport = payload.exportedBy?.toLowerCase();
+  if (!normalizedExport) {
+    throw new Error("Invalid or outdated backup format. Re-export from the agents page.");
+  }
+  if (normalizedExport !== normalizedCurrent) {
+    throw new Error(
+      "This backup was created by a different wallet. Connect the wallet that created it."
+    );
+  }
+  const db = await openDB();
+  let imported = 0;
+  for (const { key, data } of payload.items) {
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        store.put({ key, data });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+      imported++;
+    } catch (err) {
+      console.warn(`[EncryptedStore] Failed to import key "${key}":`, err);
+    }
+  }
+  db.close();
+  return { imported, skipped: payload.items.length - imported };
+}
+
 // ─── Migration ───────────────────────────────────────────────────────
 
 const MIGRATION_FLAG = "beliefmarket_migrated_to_idb";
