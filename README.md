@@ -146,6 +146,9 @@ Receipt output exists in UI and structured logs:
 
 <img width="1852" height="984" alt="Receipt log screenshot" src="https://github.com/user-attachments/assets/8c816488-217e-4991-8c05-132767050276" />
 
+<img width="1856" height="990" alt="image" src="https://github.com/user-attachments/assets/c6b0e1c0-273d-4387-b689-eb260354eeca" />
+
+
 Example structured log:
 
 ```
