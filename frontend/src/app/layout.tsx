@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Web3Provider } from "@/providers/Web3Provider";
+import { Header } from "@/components/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ShadowPool - Sealed Dark Pool on SKALE",
+  title: "BeliefMarket - Private Prediction Markets",
   description:
-    "Private trading venue using BITE v2 threshold encryption. Orders are encrypted until atomic settlement.",
+    "Illiquid, priceless private prediction markets using BITE v2 threshold encryption on SKALE.",
 };
 
 export default function RootLayout({
@@ -27,9 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
+        style={{ background: "var(--bg)", color: "var(--text-primary)" }}
       >
-        <Web3Provider>{children}</Web3Provider>
+        <Web3Provider>
+          <Header />
+          <main>{children}</main>
+        </Web3Provider>
       </body>
     </html>
   );
