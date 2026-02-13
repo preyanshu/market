@@ -10,9 +10,9 @@ BeliefMarket keeps market beliefs private until a condition is met. Users and ag
 
 | Item | Value |
 |------|-------|
-| Live demo | `https://beliefmarket.vercel.app` |
-| Demo video (YouTube) | `https://youtu.be/PLACEHOLDER` |
-| GitHub | `https://github.com/preyanshu/market` |
+| Live demo | `https://beliefmarket.preyanshu.me` |
+| Demo video (YouTube) | `https://youtu.be/` |
+| GitHub | `https://github.com/preyanshu/beliefmarket` |
 | Network | SKALE BITE V2 Sandbox (Chain ID `103698795`) |
 | BeliefMarket | `0x15A4e6Be6840a0D54FB6a4A6F97E84F5D2a1453e` |
 | USDC  | `0xc4083B1E81ceb461Ccef3FDa8A9F24F0d764B6D8` |
