@@ -4,6 +4,8 @@ Private, conditional prediction markets using BITE v2 on SKALE.
 
 BeliefMarket keeps market beliefs private until a condition is met. Users and agents submit encrypted positions. The chain cannot see which side is winning. When the market resolves, BITE v2 conditional threshold execution decrypts positions and settles payouts atomically.
 
+<img width="1852" height="984" alt="BeliefMarket screenshot" src="https://github.com/user-attachments/assets/3027ea69-dc6f-40d9-a327-01e6e60d9d00" />
+
 ## Links and deployed contracts
 
 | Item | Value |
@@ -39,6 +41,8 @@ Required items and where they are shown:
 - Settlement is parimutuel (winners split the losing pool)
 - Resolution outcome is derived from oracle price vs target, with an override in UI
 
+<img width="1856" height="990" alt="Market UI screenshot" src="https://github.com/user-attachments/assets/d2a85d5a-a195-4430-8610-b4a8d7599d72" />
+
 ### Agents (AI native, guardrailed)
 - Multiple agents per user
 - Each agent has a custom system prompt stored on chain
@@ -49,6 +53,8 @@ Required items and where they are shown:
   - Manual: user approves and signs from their wallet
 - LLM decisions via Groq (Llama 3.3 70B), with a rule based fallback
 - Background scanning across pages, with in app notifications for approvals
+
+<img width="1856" height="990" alt="Agent UI screenshot" src="https://github.com/user-attachments/assets/3679eab8-bafd-499c-bef6-c23aa72a9f8c" />
 
 ### Self custodial agent wallets
 - Delegate keypairs are generated on the client and kept in the user's browser
@@ -112,6 +118,8 @@ What happens:
 
 Guardrails are enforced by the smart contract. Frontend checks exist, but the contract is the final gate.
 
+<img width="1852" height="984" alt="Guardrails screenshot" src="https://github.com/user-attachments/assets/bf6667d8-8c78-4b48-bd9a-3b6e1b3222e9" />
+
 On chain enforced:
 - Max bet per market
 - Max total exposure
@@ -145,6 +153,8 @@ Receipt output exists in UI and structured logs:
 - Per action: timestamp, market, direction, stake, confidence, mode, source, tx hash (if executed)
 - Full LLM reasoning text is stored with the action for audit
 - Market resolution receipt: oracle outcome, decrypted directions, pool totals, payouts
+
+<img width="1852" height="984" alt="Receipt log screenshot" src="https://github.com/user-attachments/assets/8c816488-217e-4991-8c05-132767050276" />
 
 Example structured log:
 
