@@ -15,11 +15,11 @@ BeliefMarket keeps market beliefs private until a condition is met. Users and ag
 | GitHub | `https://github.com/preyanshu/market` |
 | Network | SKALE BITE V2 Sandbox (Chain ID `103698795`) |
 | BeliefMarket | `0x15A4e6Be6840a0D54FB6a4A6F97E84F5D2a1453e` |
-| USDC (6 decimals) | `0xc4083B1E81ceb461Ccef3FDa8A9F24F0d764B6D8` |
+| USDC  | `0xc4083B1E81ceb461Ccef3FDa8A9F24F0d764B6D8` |
 
 Explorer links:
-- BeliefMarket: `https://bite-v2-sandbox.explorer.skale.network/address/0x15A4e6Be6840a0D54FB6a4A6F97E84F5D2a1453e`
-- USDC: `https://bite-v2-sandbox.explorer.skale.network/address/0xc4083B1E81ceb461Ccef3FDa8A9F24F0d764B6D8`
+- BeliefMarket: `https://base-sepolia-testnet-explorer.skalenodes.com:10032/address/0x15A4e6Be6840a0D54FB6a4A6F97E84F5D2a1453e`
+- USDC: `https://base-sepolia-testnet-explorer.skalenodes.com:10032/address/0xc4083B1E81ceb461Ccef3FDa8A9F24F0d764B6D8`
 
 
 ## Features
